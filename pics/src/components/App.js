@@ -5,7 +5,7 @@ import ImageList from './ImageList';
 
 class App extends React.Component {
 
-    state = { images: [] };
+    state = { images: [], error: ''};
     onSearchSubmit = async (term) => {
         const response = await unsplash.get('/search/photos', {
             params: {
@@ -17,8 +17,14 @@ class App extends React.Component {
         // .then ((response) => {
         //     console.log(response.data.results);
         // });
-
-        this.setState({images : response.data.results})
+        if(!response.data.results.length)
+        {
+            this.setState({error: "No Picture was found for " + term})
+        }
+        else
+        {
+            this.setState({images : response.data.results, error : ''})
+        }
 
 
     }
@@ -26,7 +32,7 @@ class App extends React.Component {
         return (
         <div className="ui container" style={{marginTop: '10px'}}>
             <SearchBar onSubmit={this.onSearchSubmit} />
-            <ImageList images={this.state.images}/>
+            {!this.state.error ? <ImageList images={this.state.images}/> : this.state.error}
             </div>
         
         );
